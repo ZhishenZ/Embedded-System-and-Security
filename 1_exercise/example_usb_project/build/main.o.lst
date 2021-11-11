@@ -1,0 +1,348 @@
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 20, 1
+   6              		.eabi_attribute 21, 1
+   7              		.eabi_attribute 23, 3
+   8              		.eabi_attribute 24, 1
+   9              		.eabi_attribute 25, 1
+  10              		.eabi_attribute 26, 1
+  11              		.eabi_attribute 30, 6
+  12              		.eabi_attribute 34, 1
+  13              		.eabi_attribute 18, 4
+  14              		.file	"main.c"
+  15              		.text
+  16              	.Ltext0:
+  17              		.cfi_sections	.debug_frame
+  18              		.global	clock_config
+  19              		.section	.rodata
+  20              		.align	2
+  23              	clock_config:
+  24 0000 50       		.byte	80
+  25 0001 02       		.byte	2
+  26 0002 04       		.byte	4
+  27 0003 01       		.byte	1
+  28 0004 0000     		.short	0
+  29 0006 01       		.byte	1
+  30 0007 00       		.space	1
+  31 0008 00       		.byte	0
+  32 0009 000000   		.space	3
+  33 000c 00000100 		.word	65536
+  34 0010 01       		.byte	1
+  35 0011 01       		.byte	1
+  36 0012 01       		.byte	1
+  37 0013 01       		.byte	1
+  38              		.section	.text.SystemCoreClockSetup,"ax",%progbits
+  39              		.align	1
+  40              		.global	SystemCoreClockSetup
+  41              		.syntax unified
+  42              		.thumb
+  43              		.thumb_func
+  45              	SystemCoreClockSetup:
+  46              	.LFB193:
+  47              		.file 1 "main.c"
+   1:main.c        **** /*
+   2:main.c        ****  * Copyright (C) 2014 Infineon Technologies AG. All rights reserved.
+   3:main.c        ****  *
+   4:main.c        ****  * Infineon Technologies AG (Infineon) is supplying this software for use with
+   5:main.c        ****  * Infineon's microcontrollers.
+   6:main.c        ****  * This file can be freely distributed within development tools that are
+   7:main.c        ****  * supporting such microcontrollers.
+   8:main.c        ****  *
+   9:main.c        ****  * THIS SOFTWARE IS PROVIDED "AS IS". NO WARRANTIES, WHETHER EXPRESS, IMPLIED
+  10:main.c        ****  * OR STATUTORY, INCLUDING, BUT NOT LIMITED TO, IMPLIED WARRANTIES OF
+  11:main.c        ****  * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE.
+  12:main.c        ****  * INFINEON SHALL NOT, IN ANY CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL,
+  13:main.c        ****  * OR CONSEQUENTIAL DAMAGES, FOR ANY REASON WHATSOEVER.
+  14:main.c        ****  *
+  15:main.c        ****  */
+  16:main.c        **** 
+  17:main.c        **** /**
+  18:main.c        ****  * @file
+  19:main.c        ****  * @date 18 Feb, 2015
+  20:main.c        ****  * @version 1.0.0
+  21:main.c        ****  *
+  22:main.c        ****  * @brief USB demo example
+  23:main.c        ****  *
+  24:main.c        ****  * The example implements a communication through VCOM with a Host (Computer).
+  25:main.c        ****  *
+  26:main.c        ****  * History <br>
+  27:main.c        ****  *
+  28:main.c        ****  * Version 1.0.0 Initial <br>
+  29:main.c        ****  *
+  30:main.c        ****  */
+  31:main.c        **** 
+  32:main.c        **** #include "VirtualSerial.h"
+  33:main.c        **** 
+  34:main.c        **** /* Clock configuration */
+  35:main.c        **** XMC_SCU_CLOCK_CONFIG_t clock_config =
+  36:main.c        **** {
+  37:main.c        ****     .syspll_config.p_div = 2,
+  38:main.c        ****     .syspll_config.n_div = 80,
+  39:main.c        ****     .syspll_config.k_div = 4,
+  40:main.c        ****     .syspll_config.mode = XMC_SCU_CLOCK_SYSPLL_MODE_NORMAL,
+  41:main.c        ****     .syspll_config.clksrc = XMC_SCU_CLOCK_SYSPLLCLKSRC_OSCHP,
+  42:main.c        ****     .enable_oschp = true,
+  43:main.c        ****     .calibration_mode = XMC_SCU_CLOCK_FOFI_CALIBRATION_MODE_FACTORY,
+  44:main.c        ****     .fsys_clksrc = XMC_SCU_CLOCK_SYSCLKSRC_PLL,
+  45:main.c        ****     .fsys_clkdiv = 1,
+  46:main.c        ****     .fcpu_clkdiv = 1,
+  47:main.c        ****     .fccu_clkdiv = 1,
+  48:main.c        ****     .fperipheral_clkdiv = 1
+  49:main.c        **** };
+  50:main.c        **** 
+  51:main.c        **** 
+  52:main.c        **** void SystemCoreClockSetup(void)
+  53:main.c        **** {
+  48              		.loc 1 53 1
+  49              		.cfi_startproc
+  50              		@ args = 0, pretend = 0, frame = 0
+  51              		@ frame_needed = 1, uses_anonymous_args = 0
+  52 0000 80B5     		push	{r7, lr}
+  53              	.LCFI0:
+  54              		.cfi_def_cfa_offset 8
+  55              		.cfi_offset 7, -8
+  56              		.cfi_offset 14, -4
+  57 0002 00AF     		add	r7, sp, #0
+  58              	.LCFI1:
+  59              		.cfi_def_cfa_register 7
+  54:main.c        ****     /* Setup settings for USB clock */
+  55:main.c        ****     XMC_SCU_CLOCK_Init(&clock_config);
+  60              		.loc 1 55 5
+  61 0004 0A48     		ldr	r0, .L2
+  62 0006 FFF7FEFF 		bl	XMC_SCU_CLOCK_Init
+  56:main.c        **** 
+  57:main.c        ****     XMC_SCU_CLOCK_EnableUsbPll();
+  63              		.loc 1 57 5
+  64 000a FFF7FEFF 		bl	XMC_SCU_CLOCK_EnableUsbPll
+  58:main.c        ****     XMC_SCU_CLOCK_StartUsbPll(2, 64);
+  65              		.loc 1 58 5
+  66 000e 4021     		movs	r1, #64
+  67 0010 0220     		movs	r0, #2
+  68 0012 FFF7FEFF 		bl	XMC_SCU_CLOCK_StartUsbPll
+  59:main.c        ****     XMC_SCU_CLOCK_SetUsbClockDivider(4);
+  69              		.loc 1 59 5
+  70 0016 0420     		movs	r0, #4
+  71 0018 FFF7FEFF 		bl	XMC_SCU_CLOCK_SetUsbClockDivider
+  60:main.c        ****     XMC_SCU_CLOCK_SetUsbClockSource(XMC_SCU_CLOCK_USBCLKSRC_USBPLL);
+  72              		.loc 1 60 5
+  73 001c 0020     		movs	r0, #0
+  74 001e FFF7FEFF 		bl	XMC_SCU_CLOCK_SetUsbClockSource
+  61:main.c        ****     XMC_SCU_CLOCK_EnableClock(XMC_SCU_CLOCK_USB);
+  75              		.loc 1 61 5
+  76 0022 0120     		movs	r0, #1
+  77 0024 FFF7FEFF 		bl	XMC_SCU_CLOCK_EnableClock
+  62:main.c        **** 
+  63:main.c        ****     SystemCoreClockUpdate();
+  78              		.loc 1 63 5
+  79 0028 FFF7FEFF 		bl	SystemCoreClockUpdate
+  64:main.c        **** }
+  80              		.loc 1 64 1
+  81 002c 00BF     		nop
+  82 002e 80BD     		pop	{r7, pc}
+  83              	.L3:
+  84              		.align	2
+  85              	.L2:
+  86 0030 00000000 		.word	clock_config
+  87              		.cfi_endproc
+  88              	.LFE193:
+  90              		.section	.text.main,"ax",%progbits
+  91              		.align	1
+  92              		.global	main
+  93              		.syntax unified
+  94              		.thumb
+  95              		.thumb_func
+  97              	main:
+  98              	.LFB194:
+  65:main.c        **** 
+  66:main.c        **** /**
+  67:main.c        ****  * Main program entry point. This routine configures the hardware required by
+  68:main.c        ****  * the application, then enters a loop to run the application tasks in sequence.
+  69:main.c        ****  */
+  70:main.c        **** int main(void)
+  71:main.c        **** {
+  99              		.loc 1 71 1
+ 100              		.cfi_startproc
+ 101              		@ args = 0, pretend = 0, frame = 8
+ 102              		@ frame_needed = 1, uses_anonymous_args = 0
+ 103 0000 80B5     		push	{r7, lr}
+ 104              	.LCFI2:
+ 105              		.cfi_def_cfa_offset 8
+ 106              		.cfi_offset 7, -8
+ 107              		.cfi_offset 14, -4
+ 108 0002 82B0     		sub	sp, sp, #8
+ 109              	.LCFI3:
+ 110              		.cfi_def_cfa_offset 16
+ 111 0004 00AF     		add	r7, sp, #0
+ 112              	.LCFI4:
+ 113              		.cfi_def_cfa_register 7
+  72:main.c        ****     uint16_t Bytes = 0;
+ 114              		.loc 1 72 14
+ 115 0006 0023     		movs	r3, #0
+ 116 0008 FB80     		strh	r3, [r7, #6]	@ movhi
+  73:main.c        **** 
+  74:main.c        ****     USB_Init();
+ 117              		.loc 1 74 5
+ 118 000a FFF7FEFF 		bl	USB_Init
+ 119              	.L7:
+  75:main.c        **** 
+  76:main.c        ****     while (1)
+  77:main.c        ****     {
+  78:main.c        ****         /* Check if data received */
+  79:main.c        ****         Bytes = CDC_Device_BytesReceived(&VirtualSerial_CDC_Interface);
+ 120              		.loc 1 79 17
+ 121 000e 0C48     		ldr	r0, .L8
+ 122 0010 FFF7FEFF 		bl	CDC_Device_BytesReceived
+ 123 0014 0346     		mov	r3, r0
+ 124 0016 FB80     		strh	r3, [r7, #6]	@ movhi
+  80:main.c        **** 
+  81:main.c        ****         while(Bytes > 0)
+ 125              		.loc 1 81 14
+ 126 0018 0BE0     		b	.L5
+ 127              	.L6:
+  82:main.c        ****         {
+  83:main.c        ****             /* Send data back to the host */
+  84:main.c        ****             CDC_Device_SendByte(&VirtualSerial_CDC_Interface, CDC_Device_ReceiveByte(&VirtualSerial
+ 128              		.loc 1 84 63
+ 129 001a 0948     		ldr	r0, .L8
+ 130 001c FFF7FEFF 		bl	CDC_Device_ReceiveByte
+ 131 0020 0346     		mov	r3, r0
+ 132              		.loc 1 84 13
+ 133 0022 DBB2     		uxtb	r3, r3
+ 134 0024 1946     		mov	r1, r3
+ 135 0026 0648     		ldr	r0, .L8
+ 136 0028 FFF7FEFF 		bl	CDC_Device_SendByte
+  85:main.c        ****             --Bytes;
+ 137              		.loc 1 85 13
+ 138 002c FB88     		ldrh	r3, [r7, #6]	@ movhi
+ 139 002e 013B     		subs	r3, r3, #1
+ 140 0030 FB80     		strh	r3, [r7, #6]	@ movhi
+ 141              	.L5:
+  81:main.c        ****         {
+ 142              		.loc 1 81 14
+ 143 0032 FB88     		ldrh	r3, [r7, #6]
+ 144 0034 002B     		cmp	r3, #0
+ 145 0036 F0D1     		bne	.L6
+  86:main.c        ****         }
+  87:main.c        **** 
+  88:main.c        ****         CDC_Device_USBTask(&VirtualSerial_CDC_Interface);
+ 146              		.loc 1 88 9
+ 147 0038 0148     		ldr	r0, .L8
+ 148 003a FFF7FEFF 		bl	CDC_Device_USBTask
+  79:main.c        **** 
+ 149              		.loc 1 79 15
+ 150 003e E6E7     		b	.L7
+ 151              	.L9:
+ 152              		.align	2
+ 153              	.L8:
+ 154 0040 00000000 		.word	VirtualSerial_CDC_Interface
+ 155              		.cfi_endproc
+ 156              	.LFE194:
+ 158              		.text
+ 159              	.Letext0:
+ 160              		.file 2 "/usr/share/gcc-arm-none-eabi-10.3-2021.10/arm-none-eabi/include/machine/_default_types.h"
+ 161              		.file 3 "/usr/share/gcc-arm-none-eabi-10.3-2021.10/arm-none-eabi/include/sys/_stdint.h"
+ 162              		.file 4 "/opt/XMClib/XMC_Peripheral_Library_v2.1.16/XMCLib/inc/xmc4_scu.h"
+ 163              		.file 5 "/opt/XMClib/XMC_Peripheral_Library_v2.1.16/ThirdPartyLibraries/USBlib/USB/Core/XMC4000/..
+ 164              		.file 6 "/opt/XMClib/XMC_Peripheral_Library_v2.1.16/ThirdPartyLibraries/USBlib/USB/Class/Device/..
+ 165              		.file 7 "/opt/XMClib/XMC_Peripheral_Library_v2.1.16/ThirdPartyLibraries/USBlib/USB/Class/Device/CD
+ 166              		.file 8 "VirtualSerial.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 main.c
+     /tmp/ccvMbByP.s:23     .rodata:0000000000000000 clock_config
+     /tmp/ccvMbByP.s:20     .rodata:0000000000000000 $d
+     /tmp/ccvMbByP.s:39     .text.SystemCoreClockSetup:0000000000000000 $t
+     /tmp/ccvMbByP.s:45     .text.SystemCoreClockSetup:0000000000000000 SystemCoreClockSetup
+     /tmp/ccvMbByP.s:86     .text.SystemCoreClockSetup:0000000000000030 $d
+     /tmp/ccvMbByP.s:91     .text.main:0000000000000000 $t
+     /tmp/ccvMbByP.s:97     .text.main:0000000000000000 main
+     /tmp/ccvMbByP.s:154    .text.main:0000000000000040 $d
+                           .group:0000000000000000 wm4.0.467689a90594456bf46c01d2d8793c7f
+                           .group:0000000000000000 wm4.USB.h.376.cfdb9ecb25c70fec676f585dede264a7
+                           .group:0000000000000000 wm4.Common.h.60.c2f00e237f5994003db83c2422602b22
+                           .group:0000000000000000 wm4._newlib_version.h.4.bfdf54b0af045d4a71376ae00f63a22c
+                           .group:0000000000000000 wm4.features.h.33.5bd1eea2d80518b50f7af0b5ce6750e0
+                           .group:0000000000000000 wm4._default_types.h.15.247e5cd201eca3442cbf5404108c4935
+                           .group:0000000000000000 wm4._intsup.h.10.48bafbb683905c4daa4565a85aeeb264
+                           .group:0000000000000000 wm4._stdint.h.10.c24fa3af3bc1706662bb5593a907e841
+                           .group:0000000000000000 wm4.stdint.h.23.d53047a68f4a85177f80b422d52785ed
+                           .group:0000000000000000 wm4.stdbool.h.29.07dce69c3b78884144b7f7bd19483461
+                           .group:0000000000000000 wm4.newlib.h.8.7cb3972cd43265932d4782d5eb589854
+                           .group:0000000000000000 wm4.ieeefp.h.77.c88535c35f465c05b101960cf0179075
+                           .group:0000000000000000 wm4.config.h.224.c701144a7b0518c6ee9b9b5465b79f81
+                           .group:0000000000000000 wm4._ansi.h.31.de524f58584151836e90d8620a16f8e8
+                           .group:0000000000000000 wm4.stddef.h.39.27677723d43e5b5a7afdf8d798429f1d
+                           .group:0000000000000000 wm4._types.h.20.dd0d04dca3800a0d2a6129b87f3adbb2
+                           .group:0000000000000000 wm4.stddef.h.155.3588ebfdd1e8c7ede80509bb9c3b8009
+                           .group:0000000000000000 wm4._types.h.127.34941de1b2539d59d5cac00e0dd27a45
+                           .group:0000000000000000 wm4.reent.h.17.e292bf8b0bec6c96e131a54347145a30
+                           .group:0000000000000000 wm4.lock.h.2.1461d1fff82dffe8bfddc23307f6484f
+                           .group:0000000000000000 wm4.reent.h.77.dcd6129ff07fe81bd5636db29abe53b2
+                           .group:0000000000000000 wm4.cdefs.h.49.a54b2d5c07711bc7320a3fea9f12cb56
+                           .group:0000000000000000 wm4.string.h.15.dab3980bf35408a4c507182805e2de3a
+                           .group:0000000000000000 wm4.stddef.h.155.ba788add86a0e365f264484f110c3c29
+                           .group:0000000000000000 wm4.BoardTypes.h.52.ca64813ccee737bcc2115eab5e075fdb
+                           .group:0000000000000000 wm4.CompilerSpecific.h.55.4a5e5ff77cd35e49c89cf2115251aee0
+                           .group:0000000000000000 wm4.Attributes.h.56.73b3ee26b0836c2dec569a5fa6f1b355
+                           .group:0000000000000000 wm4.xmc_device.h.61.ba2d082e12f51240746cffdd60d42b81
+                           .group:0000000000000000 wm4.XMC4500.h.55.9aa45b9b5790506b2dcb963e4e7adeaf
+                           .group:0000000000000000 wm4.core_cm4.h.32.6c6eb1c8daeca23ce7ba79c8e8120d52
+                           .group:0000000000000000 wm4.cmsis_gcc.h.26.91b63349961c35637933e4fba51b867b
+                           .group:0000000000000000 wm4.core_cm4.h.172.fdd5a388a160bb6ff767b7d7ee212268
+                           .group:0000000000000000 wm4.system_XMC4500.h.42.99124977c10ca8844a71949adbeabd70
+                           .group:0000000000000000 wm4.XMC4500.h.208.b340195df97f067735c4c769ba59985a
+                           .group:0000000000000000 wm4.xmc_device.h.1460.8860499b404961ffcfbb8d1fefcb2146
+                           .group:0000000000000000 wm4.xmc_common.h.92.3f4336a80569affab05a81145b87c2fc
+                           .group:0000000000000000 wm4.Endianness.h.57.3ac00c5468f4b91b806a0e6dba047e9c
+                           .group:0000000000000000 wm4.Common.h.105.4b937a9cc9dcdb26c3f07541b0b763a8
+                           .group:0000000000000000 wm4.USBController.h.49.cbfc73805155b6fff6267400af3f4eec
+                           .group:0000000000000000 wm4.stdlib.h.13.4ed386f5c1a80d71e72172885d946ef2
+                           .group:0000000000000000 wm4.alloca.h.8.dfc0c703c47ec3e69746825b17d9e66d
+                           .group:0000000000000000 wm4.stdlib.h.56.f4862cfbf4363a1db01842d5bdf72c18
+                           .group:0000000000000000 wm4.xmc_usbd_regs.h.80.57c6c85fa0ecbc9f8327ce445aebb9bc
+                           .group:0000000000000000 wm4.xmc4_scu.h.83.0449f5880ac071460ec1a8072311ea51
+                           .group:0000000000000000 wm4.xmc_usbd.h.122.ce57a9e6a9da48ee33ece02813c49593
+                           .group:0000000000000000 wm4.USBController_XMC4000.h.71.902f2653e09cb8b25245faa82cc6b907
+                           .group:0000000000000000 wm4.StdDescriptors.h.73.7d17e8be7a73b855fc0f8827303b7597
+                           .group:0000000000000000 wm4.Endpoint.h.73.3734de3e84ab23fb43d81f41fba620ec
+                           .group:0000000000000000 wm4.Device_XMC4000.h.86.6803bdd99d84e764a570256c87a24d0a
+                           .group:0000000000000000 wm4.StdRequestType.h.50.461dce94a3ee1fa9ff31ec5f28bd9699
+                           .group:0000000000000000 wm4.ConfigDescriptors.h.51.0d67ebf453774188abf5a503ba8f6735
+                           .group:0000000000000000 wm4.CDCClass.h.61.0d41ba255f7ce6f076fd610d8396dd1f
+                           .group:0000000000000000 wm4.CDCClassCommon.h.72.14ca578d8547e19a8a0c0d2d328483bd
+                           .group:0000000000000000 wm4.stdio.h.27.3fc80220048df77954e38daec3bb9670
+                           .group:0000000000000000 wm4.stdarg.h.34.3a23a216c0c293b3d2ea2e89281481e6
+                           .group:0000000000000000 wm4.types.h.40.8b6acba56cefbb11746718204edc8f5e
+                           .group:0000000000000000 wm4._endian.h.31.65a10590763c3dde1ac4a7f66d7d4891
+                           .group:0000000000000000 wm4.endian.h.9.49f3a4695c1b61e8a0808de3c4a106cb
+                           .group:0000000000000000 wm4._timeval.h.32.bec3221fa7a9bb0bdde696c9c57e47d2
+                           .group:0000000000000000 wm4.timespec.h.41.d855182eb0e690443ab8651bcedca6e1
+                           .group:0000000000000000 wm4.select.h.19.40cd3f2bfc456b193b790c2754690ebf
+                           .group:0000000000000000 wm4.types.h.51.5571ec98f267d17d3c670b7a3ba33afa
+                           .group:0000000000000000 wm4.sched.h.22.c60982713a5c428609783c78f9c78d95
+                           .group:0000000000000000 wm4._pthreadtypes.h.36.fcee9961c35163dde6267ef772ad1972
+                           .group:0000000000000000 wm4.stdio.h.2.4aa87247282eca6c8f36f9de33d8df1a
+                           .group:0000000000000000 wm4.stdio.h.81.932d0c162786b883f622b8d05c120c78
+                           .group:0000000000000000 wm4.HIDClass.h.62.6bb32c59177b21a83b8e65c5a1b0a615
+                           .group:0000000000000000 wm4.HIDReportData.h.47.f13f4956396e0bec70835fe634fcc24d
+                           .group:0000000000000000 wm4.HIDParser.h.88.4b86fe94cb8d01713592cdd0391b606b
+                           .group:0000000000000000 wm4.HIDClassCommon.h.71.a60cdf9d7cd69289f43dde215b509193
+                           .group:0000000000000000 wm4.MassStorageClass.h.61.e9235f3bd090b77f36343f082ef93107
+                           .group:0000000000000000 wm4.MassStorageClassCommon.h.51.6aefecf288eb3c3c6c9bde61e26dd765
+                           .group:0000000000000000 wm4.Descriptors.h.44.84a4fd312957d0d42fb6aaa001850ba4
+
+UNDEFINED SYMBOLS
+XMC_SCU_CLOCK_Init
+XMC_SCU_CLOCK_EnableUsbPll
+XMC_SCU_CLOCK_StartUsbPll
+XMC_SCU_CLOCK_SetUsbClockDivider
+XMC_SCU_CLOCK_SetUsbClockSource
+XMC_SCU_CLOCK_EnableClock
+SystemCoreClockUpdate
+USB_Init
+CDC_Device_BytesReceived
+CDC_Device_ReceiveByte
+CDC_Device_SendByte
+CDC_Device_USBTask
+VirtualSerial_CDC_Interface
