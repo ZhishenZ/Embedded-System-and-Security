@@ -1,0 +1,7 @@
+{
+    "C_Cpp.errorSquiggles": "Enabled",
+    "files.associations": {
+        "xmc_common.h": "c",
+        "xmc_device.h": "c"
+    }
+}
