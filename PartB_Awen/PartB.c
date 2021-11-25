@@ -13,11 +13,11 @@ volatile uint8_t button_press_status=0;
 volatile uint32_t button1_first_press_time = 0;
 volatile uint32_t button1_second_press_time = 0;
 
-static char characters[] = {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','U','X','Y','Z',' ',
+static char characters[] = {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',' ',
 '0','1','2','3','4','5','6','7','8','9'};
-static char *morsecode[] = {".-","-...","-.-.","-..",".","..-.","--.","....","..",".---","-.-",".-..","--","-.","---",".--.","--.-",".-.","...","-","..-","...-",".--","-..-","-.--","--..","0"
+static char *morsecode[] = {".-","-...","-.-.","-..",".","..-.","--.","....","..",".---","-.-",".-..","--","-.","---",".--.","--.-",".-.","...","-","..-","...-",".--","-..-","-.--","--..","0",
 "-----",".----","..---","...--","....-",".....","-....","--...","---..","----."};
-char strInput[20]="AAAA";
+char strInput[20]="I CAN MORSE";
 volatile uint8_t led_k = 0;
 uint8_t intoutput[100];
 uint8_t intoutputk=0;
@@ -136,6 +136,7 @@ void checkbutton(){
     morse_output_busy=1;
     strcpy(strInput,"I CAN MORSE");
     morse();
+    CCU4_periods_lastone = CCU4_periods;
   }
   if(XMC_GPIO_GetInput(GPIO_BUTTON2) == 0 && morse_output_busy==0 && button_press_status==0){
     button_press_status=1;
@@ -144,6 +145,7 @@ void checkbutton(){
     sprintf(tempstr,"%ld",button1_second_press_time-button1_first_press_time);
     strcpy(strInput,tempstr);
     morse();
+    CCU4_periods_lastone = CCU4_periods;
   }
 
   if (XMC_GPIO_GetInput(GPIO_BUTTON1) != 0 && XMC_GPIO_GetInput(GPIO_BUTTON2) != 0)
@@ -158,17 +160,15 @@ void checkbutton(){
 int main ( void ) {
   //clearStrInputArray();
   morse();
-
+  /* Initialize GPIO*/
   XMC_GPIO_Init(XMC_GPIO_PORT1, 0, &LED_config);
   XMC_GPIO_Init(XMC_GPIO_PORT1, 1, &LED_config);
   XMC_GPIO_Init(GPIO_BUTTON1,  &input_config);
   XMC_GPIO_Init(GPIO_BUTTON2,  &input_config);
-  /* Initialize CCU40 , the MCMS transfer is irrelevant for our
-  * application . Calls EnableModule ( SCU enable clock , SCU ungate
-  * clock , SCU deassert reset ) and StartPrescaler ( GIDLC . SPRB ) */
+  /* Initialize CCU40*/
   XMC_CCU4_Init( CCU40 , XMC_CCU4_SLICE_MCMS_ACTION_TRANSFER_PR_CR ) ;
   XMC_CCU4_SLICE_CompareInit ( CCU40_CC40 , & CCU_config ) ;
-  XMC_CCU4_SLICE_SetTimerPeriodMatch ( CCU40_CC40 , 0x75/*0x2DC6*/ ) ;
+  XMC_CCU4_SLICE_SetTimerPeriodMatch ( CCU40_CC40 , 0x74/*0x2DC6*/ ) ;
   XMC_CCU4_EnableShadowTransfer ( CCU40 , XMC_CCU4_SHADOW_TRANSFER_SLICE_0 ) ;
   /* Map IRQ to NVIC IRQ input , enable IRQ in CCU4 */
   XMC_CCU4_SLICE_SetInterruptNode( CCU40_CC40 ,\
@@ -176,7 +176,7 @@ int main ( void ) {
       XMC_CCU4_SLICE_SR_ID_0);
   XMC_CCU4_SLICE_EnableEvent( CCU40_CC40 ,\
       XMC_CCU4_SLICE_IRQ_ID_PERIOD_MATCH ) ;
-  /* Enable IRQ input in NVIC ( IRQ number is in XMC4500.h ) */
+  /* Enable IRQ input in NVIC (IRQ number is in XMC4500.h) */
   NVIC_EnableIRQ( CCU40_0_IRQn );
   /* enable clock to slice CC40 */
   XMC_CCU4_EnableClock(CCU40, 0);
